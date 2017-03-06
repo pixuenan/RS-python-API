@@ -1,0 +1,1 @@
+Test the Resourcespace API with python script
