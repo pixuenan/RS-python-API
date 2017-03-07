@@ -36,8 +36,9 @@ class RSAPI(object):
 
     def upload_resource(self, file_path, title, collection_id):
         """
-        Create a resource, move the server file under /filestore, attach it to the resource id, add the resource to the
-        collection, update title and date for the upload file.
+        The original file to be uploaded has to be on the same server where Resourcespace is installed.
+        Create a resource, move the file to /filestore, attach it to the resource id, add the resource to the
+        collection, update title and date for the uploaded file.
         :param file_path: original file path on the server
         :param title: title of the file
         :param collection_id: id of the collection to be added
