@@ -27,7 +27,7 @@ class RSAPI(object):
         try:
             result = urllib2.urlopen(query_url).read()
         except (IOError, UnicodeDecodeError, urllib2.URLError, urllib2.HTTPError) as err:
-            pass
+            print err
         else:
             return result
 
@@ -42,11 +42,20 @@ class RSAPI(object):
         resource_id = self.query("create_resource", parameters.create_resource("4"))
         upload_success = self.query("upload_file", parameters.upload_file(resource_id, file_path))
         if upload_success:
-            try:
-                self.query("update_field", parameters.update_field(resource_id, "8", title))
-                self.query("update_field", parameters.update_field(resource_id, "12"))
-                self.query("add_resource_to_collection", parameters.add_resource_to_collection(resource_id, collection_id))
+            self.query("update_field", parameters.update_field(resource_id, "8", title))
+            self.query("update_field", parameters.update_field(resource_id, "12"))
+            self.query("add_resource_to_collection", parameters.add_resource_to_collection(resource_id, collection_id))
 
+    def get_resource_folder(self, resource_id, extension):
+        """
+        :return: the server path to the folder that contains the resource file
+        """
+        full_path = self.query("get_resource_path", parameters.get_resource_path(resource_id, extension))
+        if full_path:
+            # escape the double quote in the two ends of the string
+            # escape the file name because it is the same as the folder name which is not correct
+            folder_path = "".join(full_path.split("\\")[1:-1])
+            return folder_path
 
 if __name__=="__main__":
     test = RSAPI()
@@ -59,5 +68,6 @@ if __name__=="__main__":
     # print add_result
     # update_field_result = test.query("update_field", parameters.update_field("13", "12"))
     # print update_field_result
-    test.upload_resource("/home/bitnami/test/MaidwiththeFlaxenHair.mp3", "testmusictitle", "3")
+    # test.upload_resource("/home/bitnami/test/MaidwiththeFlaxenHair.mp3", "testmusictitle", "3")
+    print test.get_resource_folder("13", "mp3")
 
