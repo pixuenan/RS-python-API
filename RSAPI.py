@@ -1,6 +1,6 @@
 #!/usr/bin/python
 """
-Manage resource on the resourcespace through REST API
+Manage resource on the Resourcespace through REST API. The Resourcespace version is 7.9-2.
 Xuenan Pi
 07/03
 """
