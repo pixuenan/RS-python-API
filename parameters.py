@@ -48,3 +48,18 @@ def update_field(resource_id, field_id, value=None):
 def add_resource_to_collection(resource_id, collection_id):
     parameters = "param1=%s&param2=%s" % (resource_id, collection_id)
     return parameters
+
+
+def create_collection(collection_name):
+    parameters = "param1=%s" % collection_name
+    return parameters
+
+
+def delete_collection(collection_id):
+    parameters = "param1=%s" % collection_id
+    return parameters
+
+
+def delete_resource(resource_id):
+    parameters = "param1=%s" % resource_id
+    return parameters

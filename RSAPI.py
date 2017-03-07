@@ -10,20 +10,23 @@ import parameters
 
 
 class RSAPI(object):
-    def __init__(self):
+    def __init__(self, user, private_key):
         self.site_ip = "10.217.22.49"
         # admin name and private key
-        self.user = "user"
-        self.private_key = "2079c5142c54874d1f0b6eb787f96e0f2a79bf960963238cf7778a7ebe449d6c"
-        self.function_list = ["get_resource_path", "create_resource", "upload_file", "add_resource_to_collection"]
+        self.user = user
+        self.private_key = private_key
+        # support API functions
+        # get_resource_path, create_collection, delete_collection, delete_resource,
+        # create_resource, upload_file, update_field, add_resource_to_collection
 
     def query(self, function_to_query, parameters):
         """
+        :return: the query result
         """
         query = "user=%s&function=%s&%s" % (self.user, function_to_query, parameters)
         sign = hashlib.sha256(self.private_key+query).hexdigest()
         query_url = "http://%s/api/index.php?%s&sign=%s" % (self.site_ip, query, sign)
-        print query_url
+        # print query_url
         try:
             result = urllib2.urlopen(query_url).read()
         except (IOError, UnicodeDecodeError, urllib2.URLError, urllib2.HTTPError) as err:
@@ -57,17 +60,31 @@ class RSAPI(object):
             folder_path = "".join(full_path.split("\\")[1:-1])
             return folder_path
 
-if __name__=="__main__":
-    test = RSAPI()
-    # resource_path = test.query("get_resource_path", test.get_resource_path("1", "mp3"))
-    # resource_id = test.query("create_resource", parameters.create_resource("4"))
-    # print resource_id
-    # upload_result = test.query("upload_file", parameters.upload_file(resource_id, "/home/bitnami/test/MaidwiththeFlaxenHair.mp3"))
-    # print upload_result
-    # add_result = test.query("add_resource_to_collection", parameters.add_resource_to_collection("13", "3"))
-    # print add_result
-    # update_field_result = test.query("update_field", parameters.update_field("13", "12"))
-    # print update_field_result
-    # test.upload_resource("/home/bitnami/test/MaidwiththeFlaxenHair.mp3", "testmusictitle", "3")
-    print test.get_resource_folder("13", "mp3")
+    def create_collection(self, collection_name):
+        collection_id = self.query("create_collection", parameters.create_collection(collection_name))
+        return collection_id
 
+    def delete_collection(self, collection_id):
+        delete_result = self.query("delete_collection", parameters.create_collection(collection_id))
+        return delete_result
+
+    def delete_resource(self, resource_id):
+        """
+        Delete the resource. One time query cannot really work.
+        Keep query until API return false to make sure the resource is deleted.
+        Restrict to 3 iteration of the query.
+        """
+        for i in range(3):
+            delete_result = self.query("delete_resource", parameters.create_resource(resource_id))
+            if not delete_result:
+                break
+
+if __name__=="__main__":
+    user = "user"
+    private_key = "2079c5142c54874d1f0b6eb787f96e0f2a79bf960963238cf7778a7ebe449d6c"
+    # user = "test1"
+    # private_key = "a62318fb6daabda2c87ca1793575913cae1173165be277c1ab54d9c566ba6157"
+    test = RSAPI(user, private_key)
+    # test.upload_resource("/home/bitnami/test/MaidwiththeFlaxenHair.mp3", "testmusictitle", "3")
+    # print test.get_resource_folder("13", "mp3")
+    test.delete_resource("13")
