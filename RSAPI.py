@@ -12,7 +12,9 @@ import parameters
 class RSAPI(object):
     def __init__(self, user, private_key):
         self.site_ip = "10.217.22.49"
-        # admin name and private key
+        # user name and private key
+        # user can only create collection for himself
+        # to create a collection for a user, the user's account name and private key has to be used
         self.user = user
         self.private_key = private_key
         # support API functions
@@ -46,7 +48,9 @@ class RSAPI(object):
         resource_id = self.query("create_resource", parameters.create_resource("4"))
         upload_success = self.query("upload_file", parameters.upload_file(resource_id, file_path))
         if upload_success:
+            # add title to the resource
             self.query("update_field", parameters.update_field(resource_id, "8", title))
+            # add upload date to the resource
             self.query("update_field", parameters.update_field(resource_id, "12"))
             self.query("add_resource_to_collection", parameters.add_resource_to_collection(resource_id, collection_id))
 
@@ -66,7 +70,7 @@ class RSAPI(object):
         return collection_id
 
     def delete_collection(self, collection_id):
-        delete_result = self.query("delete_collection", parameters.create_collection(collection_id))
+        delete_result = self.query("delete_collection", parameters.delete_collection(collection_id))
         return delete_result
 
     def delete_resource(self, resource_id):
@@ -76,16 +80,17 @@ class RSAPI(object):
         Restrict to 3 iteration of the query.
         """
         for i in range(3):
-            delete_result = self.query("delete_resource", parameters.create_resource(resource_id))
+            delete_result = self.query("delete_resource", parameters.delete_resource(resource_id))
             if not delete_result:
                 break
 
 if __name__=="__main__":
-    user = "user"
-    private_key = "2079c5142c54874d1f0b6eb787f96e0f2a79bf960963238cf7778a7ebe449d6c"
-    # user = "test1"
-    # private_key = "a62318fb6daabda2c87ca1793575913cae1173165be277c1ab54d9c566ba6157"
+    # user = "user"
+    # private_key = "2079c5142c54874d1f0b6eb787f96e0f2a79bf960963238cf7778a7ebe449d6c"
+    user = "test1"
+    private_key = "a62318fb6daabda2c87ca1793575913cae1173165be277c1ab54d9c566ba6157"
     test = RSAPI(user, private_key)
-    # test.upload_resource("/home/bitnami/test/MaidwiththeFlaxenHair.mp3", "testmusictitle", "3")
+    test.upload_resource("/home/bitnami/test/MaidwiththeFlaxenHair.mp3", "testmusictitle", "8")
     # print test.get_resource_folder("13", "mp3")
-    test.delete_resource("13")
+    # test.delete_resource("15")
+    # print test.create_collection("col1")
